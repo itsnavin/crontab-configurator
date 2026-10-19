@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Build an Ubuntu cron schedule one small step at a time. Clear explanations, safe examples, and copyable crontab snippets. No account or server required.">
+  <meta name="color-scheme" content="light">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Ubuntu crontab configurator - small steps, scheduled</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="src/app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#builder">Skip to schedule builder</a>
+  <header class="site-header wrap">
+    <a class="brand" href="./" aria-label="Crontab configurator home"><span class="brand-icon" aria-hidden="true">:15</span>crontab<span class="brand-light"> / ubuntu</span></a>
+    <nav aria-label="Main navigation"><a href="#guide">How to install</a><a href="https://github.com/itsnavin/crontab-configurator">Source <span aria-hidden="true">&nearr;</span></a></nav>
+  </header>
+  <main class="wrap">
+    <section class="hero" aria-labelledby="page-title">
+      <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> A LITTLE LINUX, A LOT LESS GUESSWORK</p>
+      <h1 id="page-title">Small tasks.<br><span>Right on schedule.</span></h1>
+      <p class="intro">Tell Ubuntu when to run your command. Build a cron schedule, understand what it means, and add it safely &mdash; one small step at a time.</p>
+      <div class="trust"><span>100% in your browser</span><span>No commands executed</span><span>No sign-up, no tracking</span></div>
+    </section>
+    <div class="workspace" id="builder">
+      <form id="cron-form" novalidate>
+        <section class="card">
+          <div class="section-heading"><span class="step">01</span><div><h2>Choose your starting point</h2><p>Your own jobs are the best place to begin.</p></div></div>
+          <fieldset class="format-options">
+            <legend class="sr-only">Crontab format</legend>
+            <label class="format-option"><input type="radio" name="format" value="user" checked><span><strong>My user crontab</strong><small>Runs as you. No username field.</small></span><span class="badge">Start here</span></label>
+            <label class="format-option"><input type="radio" name="format" value="system"><span><strong>System file: /etc/cron.d</strong><small>For administrators. Includes a username.</small></span></label>
+          </fieldset>
+          <div id="username-group" hidden><label for="username">Run as existing user</label><input id="username" name="username" autocomplete="off" spellcheck="false" placeholder="e.g. ubuntu" aria-describedby="username-help username-error"><p id="username-help" class="help">Check the account on your Ubuntu host with <code>id username</code>. This app cannot verify accounts.</p><p id="username-error" class="error"></p></div>
+        </section>
+        <section class="card">
+          <div class="section-heading"><span class="step">02</span><div><h2>Set the schedule</h2><p>A preset first. A little fine-tuning if you need it.</p></div></div>
+          <div class="preset-list" role="group" aria-label="Schedule presets">
+            <button type="button" data-preset="quarter" aria-pressed="true">Every 15 min</button>
+            <button type="button" data-preset="hourly" aria-pressed="false">Hourly</button>
+            <button type="button" data-preset="morning" aria-pressed="false">Daily</button>
+            <button type="button" data-preset="weekdays" aria-pressed="false">Weekdays</button>
+            <button type="button" data-preset="monthly" aria-pressed="false">Monthly</button>
+          </div>
+          <label for="schedule">Schedule type</label>
+          <select id="schedule" name="schedule" aria-describedby="schedule-error">
+            <option value="custom">Five-field schedule (customizable)</option>
+            <option value="@reboot">@reboot - at startup</option>
+            <option value="@hourly">@hourly - minute 0 each hour</option>
+            <option value="@daily">@daily - midnight each day</option>
+            <option value="@midnight">@midnight - alias of @daily</option>
+            <option value="@weekly">@weekly - Sunday at midnight</option>
+            <option value="@monthly">@monthly - 1st at midnight</option>
+            <option value="@yearly">@yearly - January 1 at midnight</option>
+            <option value="@annually">@annually - alias of @yearly</option>
+          </select>
+          <p id="schedule-error" class="error"></p>
+          <fieldset id="fields-group">
+            <legend class="sr-only">Five time and date fields</legend>
+            <div class="cron-fields">
+              <div><label for="minute">Minute</label><input id="minute" value="*/15" autocomplete="off" spellcheck="false" aria-describedby="minute-help minute-error"><small id="minute-help">0&ndash;59</small><p id="minute-error" class="error"></p></div>
+              <div><label for="hour">Hour</label><input id="hour" value="*" autocomplete="off" spellcheck="false" aria-describedby="hour-help hour-error"><small id="hour-help">0&ndash;23</small><p id="hour-error" class="error"></p></div>
+              <div><label for="dom">Day of month</label><input id="dom" value="*" autocomplete="off" spellcheck="false" aria-describedby="dom-help dom-error"><small id="dom-help">1&ndash;31</small><p id="dom-error" class="error"></p></div>
+              <div><label for="month">Month</label><input id="month" value="*" autocomplete="off" spellcheck="false" aria-describedby="month-help month-error"><small id="month-help">1&ndash;12</small><p id="month-error" class="error"></p></div>
+              <div><label for="dow">Day of week</label><input id="dow" value="*" autocomplete="off" spellcheck="false" aria-describedby="dow-help dow-error"><small id="dow-help">0&ndash;7, Sun = 0/7</small><p id="dow-error" class="error"></p></div>
+            </div>
+          </fieldset>
+          <details class="syntax"><summary>What do the symbols mean?</summary>
+            <dl class="syntax-list"><dt><code>*</code></dt><dd>Every value in this field.</dd><dt><code>2-5</code></dt><dd>Values 2 through 5, including both ends.</dd><dt><code>1,3,5</code></dt><dd>Only the listed values.</dd><dt><code>*/15</code></dt><dd>Step through the field. Minutes: 0, 15, 30, 45.</dd><dt><code>10-30/10</code></dt><dd>Step from the start of a range: 10, 20, 30.</dd></dl>
+            <p>Combine ranges and lists, e.g. <code>0-10/5,30</code>. This builder uses numeric fields only (no names, seconds, Quartz <code>?</code>/<code>L</code>/<code>W</code>, randomization, or single-number steps). Steps are limited to the field's size.</p>
+            <p><strong>Calendar slots, not a stopwatch.</strong> <code>*/35</code> minutes means :00 and :35 every hour, not every 35 minutes since you installed the job. Day-of-month <code>*/2</code> starts at 1 and resets monthly.</p>
+          </details>
+        </section>
+        <section class="card">
+          <div class="section-heading"><span class="step">03</span><div><h2>Give it a task</h2><p>Start with something harmless. Nothing runs here.</p></div></div>
+          <label for="sample">Try a safe example</label>
+          <select id="sample"><option value="">Choose an example (optional)</option><option value="hello">Write a hello message to the system log</option><option value="uptime">Record uptime in a file in your home folder</option><option value="disk">Record free disk space in your home folder</option></select>
+          <label for="label">Job label <span class="optional">(optional)</span></label>
+          <input id="label" value="My first scheduled job" autocomplete="off" aria-describedby="label-help label-error">
+          <p id="label-help" class="help">A separate comment above your job, never part of the command.</p><p id="label-error" class="error"></p>
+          <label for="command">Your command</label>
+          <textarea id="command" rows="3" autocomplete="off" spellcheck="false" aria-describedby="command-help command-error">/usr/bin/logger -t cron-learning "Hello from my scheduled job"</textarea>
+          <p id="command-help" class="help">One line of shell text. Use absolute paths. We keep it exactly as typed &mdash; no escaping, trimming, or execution. Put multiple lines in a script instead.</p>
+          <p id="command-error" class="error"></p>
+          <label class="check-label"><input type="checkbox" id="allowPercent"><span>I intentionally use unescaped <code>%</code> for cron standard input and understand that quotes do not protect it.</span></label>
+          <details><summary>Shell &amp; command search path</summary>
+            <label for="shell">SHELL</label><input id="shell" value="/bin/sh" autocomplete="off" spellcheck="false" aria-describedby="shell-help shell-error"><p id="shell-help" class="help">An existing absolute shell path. /bin/sh is not Bash; choose /bin/bash only if needed and installed.</p><p id="shell-error" class="error"></p>
+            <label for="path">PATH</label><input id="path" value="/usr/local/bin:/usr/bin:/bin" autocomplete="off" spellcheck="false" aria-describedby="path-help path-error"><p id="path-help" class="help">Absolute directories separated by colons. Cron environment assignments do not expand $HOME, $PATH or ~.</p><p id="path-error" class="error"></p>
+          </details>
+        </section>
+      </form>
+      <aside class="preview-column" aria-labelledby="preview-title">
+        <div class="preview-sticky">
+          <section class="preview-card">
+            <div class="preview-header"><h2 id="preview-title">Your crontab snippet</h2><span id="validity" class="validity">Ready to review</span></div>
+            <p class="code-caption" id="format-caption">USER CRONTAB &middot; FIVE FIELDS + COMMAND</p>
+            <pre id="preview" tabindex="0" aria-label="Generated crontab snippet"><code id="output"></code></pre>
+            <div class="export-actions"><button type="button" id="copy">Copy snippet</button><button type="button" id="download" class="secondary">Download</button></div>
+            <p id="export-status" class="export-status" role="status" aria-live="polite"></p>
+            <p class="newline-note">UTF-8 text, with the required final newline. A snippet, not a complete replacement crontab.</p>
+          </section>
+          <section class="explanation-card" aria-labelledby="explanation-title">
+            <p class="eyebrow">IN PLAIN ENGLISH</p><h2 id="explanation-title">When will it run?</h2>
+            <p id="explanation"></p>
+            <p class="timezone-note">Times belong to your Ubuntu cron daemon's timezone, <strong>not necessarily this browser's</strong>. No next-run prediction is shown. <a href="#time-guide">Time &amp; DST details</a></p>
+          </section>
+          <div id="validation-summary" role="status" aria-live="polite" aria-atomic="true"></div>
+          <section id="warnings-box" class="warning-card" hidden><h2>Before you use this</h2><ul id="warnings"></ul></section>
+          <p class="local-note">Your command stays on this page. No backend, saved history, analytics, or automatic installation.</p>
+        </div>
+      </aside>
+    </div>
+    <section class="guide" id="guide" aria-labelledby="guide-title">
+      <p class="eyebrow">THE SAFE NEXT STEP</p><h2 id="guide-title">Add a job. Keep your existing ones.</h2>
+      <p class="guide-intro">The download is a snippet to review, not an installer. These instructions are for you to run deliberately on your Ubuntu machine. This website never changes your system.</p>
+      <div class="guide-grid">
+        <article class="card"><span class="guide-number">1</span><h3>Look, then back up</h3><p>List your current user's jobs without <code>sudo</code>:</p><pre><code>crontab -l</code></pre><p>If jobs exist, save them to a <strong>new, unused</strong> backup filename before editing:</p><pre><code>crontab -l &gt; "$HOME/crontab-backup-$(date +%Y%m%d-%H%M%S).txt"</code></pre><p>Check that the command succeeded and inspect the backup. Stop on permission or other errors. If cron explicitly says there is no crontab for you, you can start a new one.</p><p class="help">The <code>%</code> in this terminal-only backup command is fine. Inside a crontab command, it would need escaping.</p></article>
+        <article class="card"><span class="guide-number">2</span><h3>Edit, don't replace</h3><p>Open your current user's crontab:</p><pre><code>crontab -e</code></pre><p>Keep existing jobs. Add your reviewed comment and job line. Reconcile <code>SHELL</code>/<code>PATH</code> settings carefully: environment lines affect <strong>all following jobs</strong>, not just this one. Save and exit to install the edited table.</p><p class="callout"><strong>Do not run <code>crontab downloaded-file</code> just to add one job.</strong> That replaces your entire current crontab. Never edit cron's spool files directly.</p></article>
+        <article class="card"><span class="guide-number">3</span><h3>Confirm &amp; observe</h3><p>Run <code>crontab -l</code> again and confirm both old and new jobs are present. Cron must already be available and running on the host; this app doesn't install or start it.</p><p>For the hello example, look in your configured logging system, such as <code>journalctl -t cron-learning</code>. Wait for a selected minute; cron is not a second-precision scheduler.</p><p>To remove just this job, use <code>crontab -e</code> and remove only its line and any no-longer-needed settings. <strong><code>crontab -r</code> removes the whole table.</strong></p></article>
+      </div>
+      <details class="guide-detail"><summary>Administrator path: a file in /etc/cron.d</summary>
+        <p>Use this only when you understand system administration. Select system format in the builder and specify an existing, least-privileged account. Its format is <code>minute hour dom month dow username command</code>, or <code>@macro username command</code>. <strong>Do not paste this format into <code>crontab -e</code></strong>; the username would become part of the command.</p>
+        <p>An administrator can create a <strong>new</strong> reviewed file such as <code>/etc/cron.d/learning-job</code>. Avoid overwriting existing files. Under Ubuntu cron's default naming rules, use only ASCII letters, digits, underscores and hyphens &mdash; <strong>no dot or .txt extension</strong>. The app's system download is named <code>learning-job</code> accordingly.</p>
+        <p>Use a regular file owned by root (conventionally <code>root:root</code>), mode <code>0644</code> (not group/other-writable); it does not need executable permission. End every line with a newline. It has its own environment and does not inherit <code>/etc/crontab</code> settings. Verify the account with <code>id username</code>. The app checks conservative username syntax, not account existence or permissions.</p>
+        <p>Never install a system-format file with <code>crontab filename</code>. Cron normally detects file changes; this guide does not require a service restart. Files in <code>/etc/cron.daily</code> are executable scripts, a different mechanism, not this format.</p>
+      </details>
+    </section>
+    <section class="learn" aria-labelledby="learn-title">
+      <p class="eyebrow">A FEW THINGS WORTH KNOWING</p><h2 id="learn-title">Cron is small. Its details matter.</h2>
+      <div class="learning-grid">
+        <details open><summary>Two day fields: OR, with an important exception</summary><p><code>0 9 1 * 1</code> means 09:00 on the 1st <strong>or</strong> any Monday. If a day is both, it runs once at that matching minute, not twice. Minute, hour and month must still all match.</p><p>Ubuntu/Vixie cron checks whether either day field <strong>starts with <code>*</code></strong>. If so, both day tests must match. <code>0 9 */2 * 1</code> means Mondays on odd-numbered dates, not all Mondays plus odd dates.</p><p><code>1-31</code> covers all dates but is not syntactically a wildcard. Order matters: <code>*,1</code> starts with <code>*</code>; <code>1,*</code> does not. We preserve your syntax, never normalize it into a different day rule. Sunday is 0 or 7. Dates such as February 31 do not exist.</p></details>
+        <details open><summary>Percent signs are cron syntax, even in quotes</summary><p><code>/usr/bin/date '+%F'</code> is not safe as-is in a crontab. Write <code>/usr/bin/date '+\%F'</code> for a literal percent passed to the shell. Shell single or double quotes <strong>do not</strong> hide <code>%</code> from cron.</p><p>An unescaped <code>%</code> ends the shell command and sends the rest as standard input, converting later percent signs to newlines. With multiple backslashes, an odd number immediately before <code>%</code> escapes it; an even number does not. This app warns and requires acknowledgment for intentional unescaped percent syntax. It never rewrites it.</p></details>
+        <details><summary>Paths, working directories &amp; shell permissions</summary><p>Cron is not your interactive terminal: no shell aliases, activated virtual environments or normal login profile. Use absolute command and interpreter paths. Jobs normally start in the account's home directory. For another directory, explicitly use <code>cd /absolute/project &amp;&amp; /absolute/script</code>.</p><p>Choose the right shell. Ensure the account can read required files, traverse directories, execute scripts, and write logs. A directly executed script needs an executable bit and an appropriate shebang. Never put passwords or tokens in a crontab or public example; use a suitably protected configuration file. Command validation is not a shell correctness or security audit.</p></details>
+        <details><summary>Output, failures &amp; overlapping jobs</summary><p>Output may be mailed only if a mail transport is configured. Do not assume you will receive errors. For a file log, append <code>&gt;&gt; "$HOME/job.log" 2&gt;&amp;1</code> to a reviewed command. <code>&gt;</code> truncates; <code>&gt;&gt;</code> appends. Keep logs private when needed, ensure write permission, and plan rotation.</p><p>Cron starts a new invocation even if the old one is still running. For a single-instance script, consider <code>/usr/bin/flock -n "$HOME/.learning-job.lock" /absolute/script</code>. Check that flock exists and the lock is in a private, writable directory. <code>-n</code> skips a busy invocation rather than queues it; handle/report failures in your script. A lock is not retry or recovery logic.</p></details>
+        <details id="time-guide"><summary>Timezone, DST &amp; jobs missed while powered off</summary><p>Baseline: Ubuntu 22.04 LTS (Jammy), Debian/Vixie-derived <code>cron</code> 3.0pl1-137ubuntu3 family. Check your host with <code>dpkg-query -W cron</code> and read its installed <code>man 5 crontab</code> / <code>man 8 cron</code>. Other Ubuntu releases or installed packages (such as Cronie) can differ.</p><p>Schedules use the daemon's configured system timezone. Check the host using <code>timedatectl</code>; the browser's timezone is not authoritative. In this baseline, <code>TZ</code> changes the command's environment, not its schedule. Do not assume <code>CRON_TZ</code> support.</p><p>Ubuntu cron treats clock changes under three hours specially: fixed-time jobs missed by a forward change run soon afterward; repeated fixed times after a backward change are not re-run. Wildcard minute/hour schedules follow the new time immediately. These syntactic distinctions matter &mdash; do not assume every cron package simply skips or duplicates every DST job. Larger corrections use the new time immediately. We deliberately provide no next-run/DST simulator.</p><p>Ordinary jobs missed while the host is off or cron is stopped are not automatically replayed. <strong>Anacron</strong> can catch up configured daily/weekly/monthly tasks, not arbitrary minute jobs. <strong>systemd timers</strong> offer dependency integration and optional persistent calendar timers; configure those intentionally for your needs.</p></details>
+        <details><summary>@reboot is not a network-ready promise</summary><p><code>@reboot</code> is a cron startup hook handled by Ubuntu's daemon, not a fixed timestamp or an ordering contract. It may run before the network or another service is ready. It does not make your command a managed service, keep it alive, or retry a failure. Use a systemd service with explicit dependencies when readiness and lifecycle matter.</p><p>Other supported macros are calendar shortcuts: <code>@hourly</code>, <code>@daily</code>/<code>@midnight</code>, <code>@weekly</code>, <code>@monthly</code>, <code>@yearly</code>/<code>@annually</code>. They are not intervals measured from installation.</p></details>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap"><p>Built for learning. Review before scheduling.</p><p>Ubuntu references: <a href="https://manpages.ubuntu.com/manpages/jammy/man5/crontab.5.html">crontab(5)</a> &middot; <a href="https://manpages.ubuntu.com/manpages/jammy/man1/crontab.1.html">crontab(1)</a> &middot; <a href="https://manpages.ubuntu.com/manpages/jammy/man8/cron.8.html">cron(8)</a> &middot; <a href="https://github.com/itsnavin/crontab-configurator">Source &amp; validation notes</a></p></footer>
+</body>
+</html>
